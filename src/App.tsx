@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { css } from '../styled-system/css';
-import { center, vstack } from '../styled-system/patterns'
-import { Camera } from './components/camera';
+import { css } from 'styled-system/css';
+import { center, vstack } from 'styled-system/patterns'
+import { Camera } from '@/components/camera';
 import axios from 'axios';
 import cv from "@techstark/opencv-js";
 import { RoboflowObjectDetectionData, yolo2coco } from './roboflow-utils';
+import { Settings } from '@/components/settings';
+import { Heading } from '@/components/park-ui/heading';
+import { HStack } from 'styled-system/jsx';
 
 const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -85,7 +88,10 @@ function App() {
 
   return (
     <main className={vstack({ alignItems: 'center' })}>
-      <h1 className={css({ textStyle: 'heading/L1', color: 'brand.primary' })}>CNY Toolkit</h1>
+      <HStack justifyContent="space-between" w="full" p={4}>
+        <Heading as="h1" textStyle="3xl" fontWeight="bold" color="accent.default">CNY Toolkit</Heading>
+        <Settings />
+      </HStack>
       {source &&
         <div className={center({ h: '1/2', w: '100%' })}>
           <img className={css({ display: 'none' })} src={source} alt="snap" role="presentation" onLoad={(e) => {
@@ -124,7 +130,6 @@ function App() {
           <canvas className={css({ w: 300 })} ref={imageRef} />
         </div>
       }
-      <div>{JSON.stringify(data, null, 2)}</div>
       <Camera onCapture={async (data) => { setSource(data.source); setStatus("loading") }} />
     </main>
   )

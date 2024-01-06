@@ -1,8 +1,18 @@
 import { defineConfig } from "@pandacss/dev";
+import { createPreset } from '@park-ui/panda-preset'
 
 export default defineConfig({
   // Whether to use css reset
   preflight: true,
+  presets: [
+    '@pandacss/preset-base',
+    createPreset({
+      accentColor: 'orange',
+      grayColor: 'neutral',
+      borderRadius: 'sm',
+    })
+  ],
+  jsxFramework: 'react',
 
   // Where to look for your css declarations
   include: ["./src/**/*.{js,jsx,ts,tsx}", "./pages/**/*.{js,jsx,ts,tsx}"],
@@ -11,7 +21,6 @@ export default defineConfig({
   exclude: [],
   globalCss: {
     ':root': {
-      background: 'fill.primary',
       fontFamily: 'Nunito, sans-serif'
     }
   },
@@ -21,45 +30,13 @@ export default defineConfig({
     extend: {
       semanticTokens: {
         colors: {
-          brand: {
-            "primary": { "value": { "base": "#FF6F40" } },
-            "secondary": { "value": { "base": "#dc5226" } },
-            "tertiary": { "value": { "base": "#8d0000" } }
-          },
-          fill: {
-            "primary": { "value": { "base": "#FFE5D4" } },
-            "secondary": { "value": { "base": "#f5dbca" } },
-            "tertiary": { "value": { "base": "#ccb3a3" } }
-          },
-          accent: {
-            "primary": { "value": { "base": "#FFC94D" } },
-            "secondary": { "value": { "base": "#936b00" } }
-          },
-          text: {
-            "primary": { "value": { "base": "#333333" } },
-            "secondary": { "value": { "base": "#5c5c5c" } }
-          }
-        }
-      },
-      textStyles: {
-        body: {
-          description: 'The body text style - used in paragraphs',
-          value: {
-            fontWeight: 'medium',
-            fontSize: 'md',
-            lineHeight: '1.5rem'
-          }
-        },
-        'heading/L1': {
-          value: {
-            fontWeight: 'bold',
-            fontSize: '5xl'
-          }
-        },
-        'heading/L2': {
-          value: {
-            fontWeight: 'bold',
-            fontSize: '4xl'
+          bg: {
+            canvas: { "value": { "base": "#ffe5d4" } },
+            default: { "value": { "base": "#fff1e0" } },
+            subtle: { "value": { "base": "#ffe4d5" } },
+            muted: { "value": { "base": "#ffd7ca" } },
+            emphasized: { "value": { "base": "#ffcfca" } },
+            disabled: { "value": { "base": "#fde9d5" } },
           }
         }
       }
