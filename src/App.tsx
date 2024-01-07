@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { css } from 'styled-system/css';
 import { box, center, container, vstack } from 'styled-system/patterns'
 import { Camera } from '@/components/camera';
 import axios from 'axios';
 import cv from "@techstark/opencv-js";
-import { RoboflowObjectDetectionData, yolo2coco } from './roboflow-utils';
+import { RoboflowObjectDetectionData, exampleResponse, twoCardsResponse, yolo2coco } from './lib/roboflow-utils';
 import { Setting } from '@/components/setting';
 import { Heading } from '@/components/park-ui/heading';
 import { HStack } from 'styled-system/jsx';
+import { getRemainingStats } from './components/toolkit/in-between/stats';
 
 const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -47,7 +48,7 @@ const imageResize = ({
 
   cv.resize(image, dst, dim, cv.INTER_AREA)
 
-  if(w > h) {
+  if (w > h) {
     cv.rotate(dst, dst, cv.ROTATE_90_CLOCKWISE)
   }
 
@@ -66,17 +67,33 @@ const image = center({
   p: 2
 })
 
+interface RemainingCards {
+  winRemaining: number,
+  loseRemaining: number,
+  penaltyRemaining: number
+}
+
+const getRate = (remainingCards: RemainingCards) => {
+  const totalCardsLeft = remainingCards.loseRemaining + remainingCards.penaltyRemaining + remainingCards.winRemaining
+  const winRate = remainingCards.winRemaining / totalCardsLeft
+  const loseRate = remainingCards.loseRemaining / totalCardsLeft
+  const penaltyRate = remainingCards.penaltyRemaining / totalCardsLeft
+
+  return { winRate, loseRate, penaltyRate }
+}
+
 function App() {
   const [source, setSource] = useState("")
   const imageRef = useRef<HTMLCanvasElement>(null)
   const [status, setStatus] = useState("idle")
   const [data, setData] = useState<RoboflowObjectDetectionData | null>(null)
+  const [remainingCards, setRemainingCards] = useState<RemainingCards | undefined>(undefined)
 
   useEffect(() => {
-    if (imageRef.current) {
-      const ctx = imageRef.current.getContext("2d")
-      if (ctx) {
-        if (status === "completed") {
+    if (status === "completed") {
+      if (imageRef.current) {
+        const ctx = imageRef.current.getContext("2d")
+        if (ctx) {
           data?.predictions.forEach(prediction => {
             const { x, y, width, height } = yolo2coco(
               prediction.x,
@@ -94,9 +111,12 @@ function App() {
             ctx.stroke();
           })
         }
-
-        if (status === "loading") {
-          ctx.clearRect(0, 0, imageRef.current.width, imageRef.current.height)
+        const holdings = [...new Set(data?.predictions.map(pred => pred.class_id))]
+        try {
+          const stats = getRemainingStats(holdings)
+          setRemainingCards(stats)
+        } catch (err) {
+          console.log(err)
         }
       }
     }
@@ -109,47 +129,54 @@ function App() {
         <Setting />
       </HStack>
       {source &&
-        <div className={center({ h: '1/2', w: '100%' })}>
-          <img className={css({ display: 'none' })} src={source} alt="snap" role="presentation" onLoad={(e) => {
-            if (imageRef.current) {
-              const image = cv.imread(e.currentTarget)
-              const { height: h, width: w } = image.size()
-              const resizeParams = {
-                image,
-                width: w > h ? 800 : undefined,
-                height: h > w ? 800 : undefined
-              }
-              const resizedImage = imageResize(resizeParams)
-              cv.imshow(imageRef.current, resizedImage);
-              const base64out = imageRef.current.toDataURL()
-              // axios({
-              //   method: "POST",
-              //   url: "https://detect.roboflow.com/playing-cards-ow27d/4",
-              //   params: {
-              //     api_key: "2oyw5t39LaDRwByh6M9J"
-              //   },
-              //   data: base64out,
-              //   headers: {
-              //     "Content-Type": "application/x-www-form-urlencoded"
-              //   }
-              // })
-              //   .then(function (response) {
-              //     console.log(response.data);
-              //     setData(response.data)
-              //   })
-              //   .catch(function (error) {
-              //     console.log(error.message);
-              //   }).finally(() => setStatus("completed"));
-              setStatus("completed")
-
+        <img className={css({ display: 'none' })} src={source} alt="snap" role="presentation" onLoad={(e) => {
+          if (imageRef.current) {
+            const ctx = imageRef.current.getContext("2d")
+            if (ctx) {
+              ctx.clearRect(0, 0, imageRef.current.width, imageRef.current.height)
             }
-          }} />
-        </div>
+
+            const image = cv.imread(e.currentTarget)
+            const { height: h, width: w } = image.size()
+            const resizeParams = {
+              image,
+              width: w > h ? 800 : undefined,
+              height: h > w ? 800 : undefined
+            }
+            const resizedImage = imageResize(resizeParams)
+            cv.imshow(imageRef.current, resizedImage);
+            const base64out = imageRef.current.toDataURL()
+            // setData(twoCardsResponse)
+            axios({
+              method: "POST",
+              url: "https://detect.roboflow.com/playing-cards-ow27d/4",
+              params: {
+                api_key: "2oyw5t39LaDRwByh6M9J"
+              },
+              data: base64out,
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            })
+              .then(function (response) {
+                console.log(response.data);
+                setData(response.data)
+              })
+              .catch(function (error) {
+                console.log(error.message);
+              }).finally(() => setStatus("completed"));
+            setStatus("completed")
+
+          }
+        }} />
       }
       <div className={image}>
-        <canvas className={css({w: "full"})}ref={imageRef} />
+        <canvas className={css({ w: "full" })} ref={imageRef} />
       </div>
-      <Camera onCapture={async (data) => { setSource(data.source); setStatus("loading") }} />
+      <div>
+        {remainingCards && JSON.stringify(getRate(remainingCards))}
+      </div>
+      <Camera onCapture={async (data) => { setSource(data.source) }} />
     </main>
   )
 }
