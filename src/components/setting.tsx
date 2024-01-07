@@ -4,10 +4,13 @@ import { Portal } from "@ark-ui/react"
 import * as Select from "@/components/park-ui/select"
 import * as Dialog from "@/components/park-ui/dialog"
 import { Stack } from "styled-system/jsx"
-import { Button } from "@/components/park-ui/button"
 import { IconButton } from "@/components/park-ui/icon-button"
+import { SettingState, useSetting } from "@/contexts/setting"
+import { Switch } from "./park-ui/switch"
 
 export const Setting = () => {
+  const { state, changeSetting } = useSetting()
+
   const items = [
     { label: 'Blackjack', value: 'blackjack' },
     { label: 'In Between', value: 'in-between' }
@@ -16,7 +19,7 @@ export const Setting = () => {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <IconButton aria-label="Close Dialog" variant="ghost" size="2xl" color="accent.default">
+        <IconButton aria-label="Close Dialog" variant="ghost" size="lg" color="accent.default">
           <Cog6ToothIcon className={css({ w: 6, strokeWidth: 2 })} />
         </IconButton>
       </Dialog.Trigger>
@@ -25,9 +28,22 @@ export const Setting = () => {
         <Dialog.Positioner>
           <Dialog.Content>
             <Stack gap="8" p="6">
-              <Stack gap="4">
+              <Stack gap="8">
                 <Dialog.Title>Settings</Dialog.Title>
-                <Select.Root positioning={{ sameWidth: true }} width="2xs" items={items}>
+                <Select.Root
+                  positioning={{ sameWidth: true }}
+                  width="2xs"
+                  items={items}
+                  defaultValue={[state.toolkit]}
+                  onValueChange={(e) => {
+                    const toolkit = e.value[0] as SettingState['toolkit']
+                    if (toolkit === "blackjack") {
+                      changeSetting({ toolkit, configuration: undefined })
+                    } else {
+                      changeSetting({ toolkit, configuration: { beta: false } })
+                    }
+                  }}
+                >
                   <Select.Label>Toolkit</Select.Label>
                   <Select.Control>
                     <Select.Trigger>
@@ -51,14 +67,10 @@ export const Setting = () => {
                     </Select.Content>
                   </Select.Positioner>
                 </Select.Root>
-              </Stack>
-              <Stack gap="3" direction="row" width="full">
-                <Dialog.CloseTrigger asChild>
-                  <Button variant="outline" width="full">
-                    Cancel
-                  </Button>
-                </Dialog.CloseTrigger>
-                <Button width="full">Confirm</Button>
+                {state.toolkit === "in-between" &&
+                  <Switch defaultChecked={state.configuration?.beta} onCheckedChange={(e)=> changeSetting({...state, configuration: {beta: e.checked}})}>
+                    Beta
+                  </Switch>}
               </Stack>
             </Stack>
             <Dialog.CloseTrigger asChild position="absolute" top="2" right="2">

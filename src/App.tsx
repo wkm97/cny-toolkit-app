@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { css } from 'styled-system/css';
-import { center, vstack } from 'styled-system/patterns'
+import { box, center, container, vstack } from 'styled-system/patterns'
 import { Camera } from '@/components/camera';
 import axios from 'axios';
 import cv from "@techstark/opencv-js";
 import { RoboflowObjectDetectionData, yolo2coco } from './roboflow-utils';
-import { Settings } from '@/components/settings';
+import { Setting } from '@/components/setting';
 import { Heading } from '@/components/park-ui/heading';
 import { HStack } from 'styled-system/jsx';
 
@@ -47,8 +47,24 @@ const imageResize = ({
 
   cv.resize(image, dst, dim, cv.INTER_AREA)
 
+  if(w > h) {
+    cv.rotate(dst, dst, cv.ROTATE_90_CLOCKWISE)
+  }
+
   return dst
 }
+
+const image = center({
+  background: 'rgba(255, 255, 255, 0.2)',
+  borderRadius: "sm",
+  boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+  backdropFilter: 'blur(5px)',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  minW: 300,
+  minH: 500,
+  mx: 2,
+  p: 2
+})
 
 function App() {
   const [source, setSource] = useState("")
@@ -87,10 +103,10 @@ function App() {
   }, [status, data])
 
   return (
-    <main className={vstack({ alignItems: 'center' })}>
-      <HStack justifyContent="space-between" w="full" p={4}>
-        <Heading as="h1" textStyle="3xl" fontWeight="bold" color="accent.default">CNY Toolkit</Heading>
-        <Settings />
+    <main className={vstack({ alignItems: 'center', gap: 0 })}>
+      <HStack justifyContent="space-between" w="full" pl={4}>
+        <Heading as="h1" fontWeight="bold" color="accent.default">CNY Toolkit</Heading>
+        <Setting />
       </HStack>
       {source &&
         <div className={center({ h: '1/2', w: '100%' })}>
@@ -106,30 +122,33 @@ function App() {
               const resizedImage = imageResize(resizeParams)
               cv.imshow(imageRef.current, resizedImage);
               const base64out = imageRef.current.toDataURL()
-              axios({
-                method: "POST",
-                url: "https://detect.roboflow.com/playing-cards-ow27d/4",
-                params: {
-                  api_key: "2oyw5t39LaDRwByh6M9J"
-                },
-                data: base64out,
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded"
-                }
-              })
-                .then(function (response) {
-                  console.log(response.data);
-                  setData(response.data)
-                })
-                .catch(function (error) {
-                  console.log(error.message);
-                }).finally(() => setStatus("completed"));
+              // axios({
+              //   method: "POST",
+              //   url: "https://detect.roboflow.com/playing-cards-ow27d/4",
+              //   params: {
+              //     api_key: "2oyw5t39LaDRwByh6M9J"
+              //   },
+              //   data: base64out,
+              //   headers: {
+              //     "Content-Type": "application/x-www-form-urlencoded"
+              //   }
+              // })
+              //   .then(function (response) {
+              //     console.log(response.data);
+              //     setData(response.data)
+              //   })
+              //   .catch(function (error) {
+              //     console.log(error.message);
+              //   }).finally(() => setStatus("completed"));
+              setStatus("completed")
 
             }
           }} />
-          <canvas className={css({ w: 300 })} ref={imageRef} />
         </div>
       }
+      <div className={image}>
+        <canvas className={css({w: "full"})}ref={imageRef} />
+      </div>
       <Camera onCapture={async (data) => { setSource(data.source); setStatus("loading") }} />
     </main>
   )

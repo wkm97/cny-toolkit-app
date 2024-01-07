@@ -26,7 +26,7 @@ export const Camera = ({ onCapture }: CameraProps) => {
   }
 
   return (
-    <div className={css({ position: 'fixed', bottom: 0, py: 2 })}>
+    <div className={css({ position: 'fixed', bottom: 4 })}>
       <IconButton aria-label="upload picture" size="2xl" borderRadius="full">
         <input
           className={css({ display: 'none' })}
