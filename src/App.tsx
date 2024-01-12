@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { css } from 'styled-system/css';
-import { box, center, container, vstack } from 'styled-system/patterns'
+import { center, vstack } from 'styled-system/patterns'
 import { Camera } from '@/components/camera';
 import axios from 'axios';
 import cv from "@techstark/opencv-js";
-import { RoboflowObjectDetectionData, exampleResponse, twoCardsResponse, yolo2coco } from './lib/roboflow-utils';
+import { RoboflowObjectDetectionData, yolo2coco } from '@/lib/roboflow-utils';
 import { Setting } from '@/components/setting';
 import { Heading } from '@/components/park-ui/heading';
 import { HStack } from 'styled-system/jsx';
-import { getRemainingStats } from './components/toolkit/in-between/stats';
+import { getRemainingStats } from '@/components/toolkit/in-between/stats';
+import { createToaster } from '@ark-ui/react';
+import * as Toast from '@/components/park-ui/toast';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { IconButton } from '@/components/park-ui/icon-button';
 
 const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -88,6 +92,22 @@ function App() {
   const [status, setStatus] = useState("idle")
   const [data, setData] = useState<RoboflowObjectDetectionData | null>(null)
   const [remainingCards, setRemainingCards] = useState<RemainingCards | undefined>(undefined)
+  const [Toaster, toast] = createToaster({
+    placement: 'bottom-end',
+    render(toast) {
+      return (
+        <Toast.Root>
+          <Toast.Title>{toast.title}</Toast.Title>
+          <Toast.Description>{toast.description}</Toast.Description>
+          <Toast.CloseTrigger asChild>
+            <IconButton size="sm" variant="link">
+              <XMarkIcon />
+            </IconButton>
+          </Toast.CloseTrigger>
+        </Toast.Root>
+      )
+    },
+  });
 
   useEffect(() => {
     if (status === "completed") {
@@ -112,15 +132,19 @@ function App() {
           })
         }
         const holdings = [...new Set(data?.predictions.map(pred => pred.class_id))]
-        try {
-          const stats = getRemainingStats(holdings)
-          setRemainingCards(stats)
-        } catch (err) {
-          console.log(err)
-        }
+        const calculateRemaining = new Promise<RemainingCards>((resolve, reject) => {
+          try {
+            resolve(getRemainingStats(holdings))
+          } catch (error) {
+            reject(error)
+          }
+        })
+        calculateRemaining
+          .then(stats => setRemainingCards(stats))
+          .catch((error) => toast.create({ title: 'Required 2 cards only', description: (error as Error).message }))
       }
     }
-  }, [status, data])
+  }, [status, data, toast])
 
   return (
     <main className={vstack({ alignItems: 'center', gap: 0 })}>
@@ -159,13 +183,14 @@ function App() {
               }
             })
               .then(function (response) {
+                toast.create({ title: 'Required 2 cards only', description: 'hi' })
                 console.log(response.data);
                 setData(response.data)
               })
               .catch(function (error) {
                 console.log(error.message);
-              }).finally(() => setStatus("completed"));
-            setStatus("completed")
+              })
+              .finally(() => setStatus("completed"));
 
           }
         }} />
@@ -177,6 +202,7 @@ function App() {
         {remainingCards && JSON.stringify(getRate(remainingCards))}
       </div>
       <Camera onCapture={async (data) => { setSource(data.source) }} />
+      <Toaster />
     </main>
   )
 }

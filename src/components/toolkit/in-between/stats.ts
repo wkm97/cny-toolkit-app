@@ -26,7 +26,7 @@ export const getRemainingStats = (holding: number[]) => {
   const holdingValues = holding.map(id2value)
 
   if (holdingValues[0] === holdingValues[1]) {
-    throw new Error('Double Penalty.')
+    throw new Error('Same value cards with penalty.')
   }
 
   if (holdingValues[0] > holdingValues[1]) {
