@@ -156,9 +156,7 @@ export const InBetweenToolkit = () => {
             </Button>}
         </Tabs.Content>
         <Tabs.Content value="result" pt={0}>
-          <div className={css({ w: 'full', mt: 4 })}>
-            {inBetweenState.stats ? <InBetweenResult stats={inBetweenState.stats} />: 'No results'}
-          </div>
+            {inBetweenState.stats ? <InBetweenResult stats={inBetweenState.stats} />: <span className={css({ml: 4})}>No results</span>}
         </Tabs.Content>
       </Tabs.Root>
       <Camera onCapture={async (data) => {
