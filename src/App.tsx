@@ -13,8 +13,10 @@ import * as Toast from '@/components/park-ui/toast';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { IconButton } from '@/components/park-ui/icon-button';
 import { imageResize } from './lib/image-utils';
-import { InBetweenResult } from './components/toolkit/in-between/result';
+import { InBetweenResult } from '@/components/toolkit/in-between/result';
 import { InBetweenState, initInBetweenState } from './components/toolkit/in-between/state';
+import * as Tabs from '@/components/park-ui/tabs';
+import { Button } from './components/park-ui/button';
 
 const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -24,6 +26,7 @@ const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
 });
 
 const image = center({
+  position: 'relative',
   background: 'rgba(255, 255, 255, 0.2)',
   borderRadius: "sm",
   boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
@@ -35,13 +38,26 @@ const image = center({
   p: 2
 })
 
+const spinner = css({
+  position: 'absolute',
+  border: '2px solid',
+  borderColor: 'bg.default',
+  borderTop: '2px solid',
+  borderTopColor: 'fg.default',
+  borderRadius: '50%',
+  width: 10,
+  height: 10,
+  animation: 'spin',
+})
+
 function App() {
   const [source, setSource] = useState("")
   const imageRef = useRef<HTMLCanvasElement>(null)
   const [inBetweenState, setInBetweenState] = useState<InBetweenState>(initInBetweenState)
+  const [value, setValue] = useState<string>('image')
 
   const [Toaster, toast] = createToaster({
-    placement: 'bottom-end',
+    placement: 'top-end',
     render(toast) {
       return (
         <Toast.Root>
@@ -66,16 +82,17 @@ function App() {
           ctx.clearRect(0, 0, imageRef.current.width, imageRef.current.height)
         }
         cv.imshow(imageRef.current, inBetweenState.image);
+        setValue('image')
         const base64out = imageRef.current.toDataURL()
         getRoboflowSingleDetection(base64out).then(function (response) {
           setInBetweenState(prev => ({ ...prev, detection: response.data, stats: undefined }))
         }).catch(function (error) {
           console.log(error.message);
-        }).finally(() => setInBetweenState(prev => ({ ...prev, status: 'detected' })));
+        }).finally(() => setInBetweenState(prev => ({ ...prev, stats: undefined, status: 'detected' })));
       }
 
       if (status === 'detected' && inBetweenState.detection && ctx) {
-        const {predictions} = inBetweenState.detection
+        const { predictions } = inBetweenState.detection
         predictions.forEach(prediction => {
           const { x, y, width, height } = yolo2coco(
             prediction.x,
@@ -108,11 +125,11 @@ function App() {
       }
     }
 
-  }, [inBetweenState, toast])
+  }, [inBetweenState])
 
   return (
-    <main className={vstack({ alignItems: 'center', gap: 0 })}>
-      <HStack justifyContent="space-between" w="full" pl={4}>
+    <main className={vstack({ alignItems: 'center', gap: 0})}>
+      <HStack justifyContent="space-between" w="full" pl={2}>
         <Heading as="h1" fontWeight="bold" color="accent.default">CNY Toolkit</Heading>
         <Setting />
       </HStack>
@@ -131,13 +148,36 @@ function App() {
           }
         }} />
       }
-      <div className={image}>
-        <canvas className={css({ w: "full" })} ref={imageRef} />
-      </div>
-      <div className={css({w: 'full', mt: 4})}>
-        <InBetweenResult state={inBetweenState}/>
-      </div>
-      <Camera onCapture={async (data) => { setSource(data.source) }} />
+      <Tabs.Root value={value} onValueChange={(e) => setValue(e.value)}>
+        <Tabs.List boxShadow='none'>
+          <Tabs.Trigger value="image">
+            Image
+          </Tabs.Trigger>
+          <Tabs.Trigger value="result">
+            Result
+          </Tabs.Trigger>
+          <Tabs.Indicator />
+        </Tabs.List>
+        <Tabs.Content value="image" pt={0}>
+          <div className={image}>
+            {inBetweenState.status === 'loaded' && <div className={spinner} />}
+            <canvas className={css({ w: "full" })} ref={imageRef} />
+          </div>
+          {inBetweenState.stats &&
+            <Button float='end' mr={2} mt={2} colorPalette="accent" variant="outline" onClick={() => setValue('result')}>
+              View Result
+            </Button>}
+        </Tabs.Content>
+        <Tabs.Content value="result" pt={0}>
+          <div className={css({ w: 'full', mt: 4 })}>
+            {inBetweenState.stats ? <InBetweenResult stats={inBetweenState.stats} />: 'No results'}
+          </div>
+        </Tabs.Content>
+      </Tabs.Root>
+      <Camera onCapture={async (data) => {
+        setInBetweenState(initInBetweenState)
+        setSource(data.source)
+      }} />
       <Toaster />
     </main>
   )

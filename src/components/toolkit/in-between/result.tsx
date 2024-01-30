@@ -1,20 +1,25 @@
 import { IconButton } from "@/components/park-ui/icon-button"
-import { InBetweenState } from "./state"
-import { getRate } from "./stats"
+import { RemainingCards, getRate } from "./stats"
 import * as Table from '@/components/park-ui/table'
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline"
+import { MinusIcon, ArrowUturnLeftIcon } from "@heroicons/react/24/outline"
 import { hstack } from "styled-system/patterns"
+import { useState } from "react"
+import { Button } from "@/components/park-ui/button"
 
 interface InBetweenResultProps {
-  state?: InBetweenState
+  stats: RemainingCards
 }
 
-export const InBetweenResult = ({ state }: InBetweenResultProps) => {
-  if (!state?.stats) {
+export const InBetweenResult = ({ stats }: InBetweenResultProps) => {
+
+  const [remaining, setRemaining] = useState<RemainingCards>(stats)
+
+  if (!remaining) {
     return 'No results'
   }
 
-  const rates = getRate(state.stats)
+  const rates = getRate(remaining)
+  const formatRate = (rate: number) => (rate * 100).toFixed(2) + '%'
 
   return <Table.Root textAlign="center">
     <Table.Head>
@@ -27,43 +32,52 @@ export const InBetweenResult = ({ state }: InBetweenResultProps) => {
     <Table.Body>
       <Table.Row>
         <Table.Cell fontWeight="medium">Win</Table.Cell>
-        <Table.Cell>{rates?.winRate}</Table.Cell>
+        <Table.Cell>{formatRate(rates.winRate)}</Table.Cell>
         <Table.Cell className={hstack({ w: 'full', justifyContent: 'space-around' })}>
-          <IconButton variant="ghost" size="md" color="accent.default">
-            <MinusIcon />
+          <IconButton variant="ghost" size="md" color="accent.default" onClick={() => setRemaining(prev => ({ ...prev, winRemaining: Math.max(prev.winRemaining + 1, 0) }))}>
+            <ArrowUturnLeftIcon />
           </IconButton>
-          {state.stats.winRemaining}
-          <IconButton variant="ghost" size="md" color="accent.default">
-            <PlusIcon />
+          {remaining.winRemaining}
+          <IconButton variant="ghost" size="md" color="accent.default" onClick={() => setRemaining(prev => ({ ...prev, winRemaining: Math.max(prev.winRemaining - 1, 0) }))}>
+            <MinusIcon />
           </IconButton>
         </Table.Cell>
       </Table.Row>
       <Table.Row>
         <Table.Cell fontWeight="medium">Lose</Table.Cell>
-        <Table.Cell>{rates?.loseRate}</Table.Cell>
+        <Table.Cell>{formatRate(rates.loseRate)}</Table.Cell>
         <Table.Cell className={hstack({ w: 'full', justifyContent: 'space-around' })}>
-          <IconButton variant="ghost" size="md" color="accent.default">
-            <MinusIcon />
+          <IconButton variant="ghost" size="md" color="accent.default" onClick={() => setRemaining(prev => ({ ...prev, loseRemaining: Math.max(prev.loseRemaining + 1, 0) }))}>
+            <ArrowUturnLeftIcon />
           </IconButton>
-          {state.stats.loseRemaining}
-          <IconButton variant="ghost" size="md" color="accent.default">
-            <PlusIcon />
+          {remaining.loseRemaining}
+          <IconButton variant="ghost" size="md" color="accent.default" onClick={() => setRemaining(prev => ({ ...prev, loseRemaining: Math.max(prev.loseRemaining - 1, 0) }))}>
+            <MinusIcon />
           </IconButton>
         </Table.Cell>
       </Table.Row>
       <Table.Row>
         <Table.Cell fontWeight="medium">Penalty</Table.Cell>
-        <Table.Cell>{rates?.penaltyRate}</Table.Cell>
+        <Table.Cell>{formatRate(rates.penaltyRate)}</Table.Cell>
         <Table.Cell className={hstack({ w: 'full', justifyContent: 'space-around' })}>
-          <IconButton variant="ghost" size="md" color="accent.default">
-            <MinusIcon />
+          <IconButton variant="ghost" size="md" color="accent.default" onClick={() => setRemaining(prev => ({ ...prev, penaltyRemaining: Math.max(prev.penaltyRemaining + 1, 0) }))}>
+            <ArrowUturnLeftIcon />
           </IconButton>
-          {state.stats.penaltyRemaining}
-          <IconButton variant="ghost" size="md" color="accent.default">
-            <PlusIcon />
+          {remaining.penaltyRemaining}
+          <IconButton variant="ghost" size="md" color="accent.default" onClick={() => setRemaining(prev => ({ ...prev, penaltyRemaining: Math.max(prev.penaltyRemaining - 1, 0) }))}>
+            <MinusIcon />
           </IconButton>
         </Table.Cell>
       </Table.Row>
     </Table.Body>
+    <Table.Footer>
+      <Table.Row>
+        <Table.Cell>
+          <Button colorPalette="accent" variant="outline" onClick={() => setRemaining(stats)}>
+            Reset
+          </Button>
+        </Table.Cell>
+      </Table.Row>
+    </Table.Footer>
   </Table.Root>
 }

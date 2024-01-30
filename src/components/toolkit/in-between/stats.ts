@@ -21,8 +21,7 @@ export interface RemainingCards {
   penaltyRemaining: number
 }
 
-export const getRate = (remainingCards?: RemainingCards) => {
-  if(!remainingCards) return undefined
+export const getRate = (remainingCards: RemainingCards) => {
 
   const totalCardsLeft = remainingCards.loseRemaining + remainingCards.penaltyRemaining + remainingCards.winRemaining
   const winRate = remainingCards.winRemaining / totalCardsLeft

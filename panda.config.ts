@@ -28,18 +28,31 @@ export default defineConfig({
   // Useful for theme customization
   theme: {
     extend: {
-      semanticTokens: {
-        colors: {
-          bg: {
-            canvas: { "value": { "base": "#ffe5d4" } },
-            default: { "value": { "base": "#fff1e0" } },
-            subtle: { "value": { "base": "#ffe4d5" } },
-            muted: { "value": { "base": "#ffd7ca" } },
-            emphasized: { "value": { "base": "#ffcfca" } },
-            disabled: { "value": { "base": "#fde9d5" } },
+      tokens: {
+        animations: {
+          spin: {
+            value: 'spin 1s linear infinite'
           }
         }
-      }
+      },
+      keyframes: {
+        spin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        }
+      },
+      // semanticTokens: {
+      //   colors: {
+      //     bg: {
+      //       canvas: { "value": { "base": "#ffe5d4" } },
+      //       default: { "value": { "base": "#fff1e0" } },
+      //       subtle: { "value": { "base": "#ffe4d5" } },
+      //       muted: { "value": { "base": "#ffd7ca" } },
+      //       emphasized: { "value": { "base": "#ffcfca" } },
+      //       disabled: { "value": { "base": "#fde9d5" } },
+      //     }
+      //   }
+      // }
     },
   },
 
