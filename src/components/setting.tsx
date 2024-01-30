@@ -26,7 +26,7 @@ export const Setting = () => {
       <Portal>
         <Dialog.Backdrop background="bg.canvas" opacity="0.8" filter="blur(20px)" />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content h={64}>
             <Stack gap="8" p="6">
               <Stack gap="8">
                 <Dialog.Title>Settings</Dialog.Title>
