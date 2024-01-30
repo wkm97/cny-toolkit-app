@@ -18,7 +18,7 @@ const SettingContext = React.createContext<ISettingContext>({} as ISettingContex
 export const SettingProvider = ({ children }: React.PropsWithChildren) => {
 
 
-  const [storage, setStorage] = useLocalStorageState<SettingState>("setting", { toolkit: "blackjack", configuration: undefined })
+  const [storage, setStorage] = useLocalStorageState<SettingState>("setting", { toolkit: "in-between", configuration: undefined })
 
   const context = useMemo(() => ({
     state: storage,
