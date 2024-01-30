@@ -4,6 +4,7 @@ import { Heading } from '@/components/park-ui/heading';
 import { HStack } from 'styled-system/jsx';
 import { InBetweenToolkit } from './components/toolkit/in-between';
 import { useSetting } from './contexts/setting';
+import { BlackjackToolkit } from './components/toolkit/blackjack';
 
 const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -17,13 +18,13 @@ function App() {
   const { state } = useSetting()
 
   return (
-    <main className={vstack({ gap: 0})}>
+    <main className={vstack({ gap: 2})}>
       <HStack justifyContent="space-between" w="full" pl={2}>
         <Heading as="h1" fontWeight="bold" color="accent.default">CNY Toolkit</Heading>
         <Setting />
       </HStack>
       {state.toolkit === "in-between" && <InBetweenToolkit/>}
-      {state.toolkit === "blackjack" && "Blackjack game"}
+      {state.toolkit === "blackjack" && <BlackjackToolkit/>}
     </main>
   )
 }
