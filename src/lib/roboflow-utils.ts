@@ -1,3 +1,4 @@
+import axios from "axios"
 
 export interface RoboflowObjectDetectionData {
     time: number
@@ -51,52 +52,52 @@ export const twoCardsResponse: RoboflowObjectDetectionData = {
             "class_id": 45
         }
     ]
-  }
+}
 
 export const exampleResponse: RoboflowObjectDetectionData = {
-  "time": 0.07786183999996865,
-  "image": {
-      "width": 600,
-      "height": 800
-  },
-  "predictions": [
-      {
-          "x": 148,
-          "y": 464.5,
-          "width": 48,
-          "height": 59,
-          "confidence": 0.8124814033508301,
-          "class": "5H",
-          "class_id": 18
-      },
-      {
-          "x": 104.5,
-          "y": 582,
-          "width": 59,
-          "height": 56,
-          "confidence": 0.8075759410858154,
-          "class": "3D",
-          "class_id": 9
-      },
-      {
-          "x": 259.5,
-          "y": 364,
-          "width": 31,
-          "height": 64,
-          "confidence": 0.8027207851409912,
-          "class": "KD",
-          "class_id": 45
-      },
-      {
-          "x": 473.5,
-          "y": 535,
-          "width": 33,
-          "height": 66,
-          "confidence": 0.793393611907959,
-          "class": "KD",
-          "class_id": 45
-      }
-  ]
+    "time": 0.07786183999996865,
+    "image": {
+        "width": 600,
+        "height": 800
+    },
+    "predictions": [
+        {
+            "x": 148,
+            "y": 464.5,
+            "width": 48,
+            "height": 59,
+            "confidence": 0.8124814033508301,
+            "class": "5H",
+            "class_id": 18
+        },
+        {
+            "x": 104.5,
+            "y": 582,
+            "width": 59,
+            "height": 56,
+            "confidence": 0.8075759410858154,
+            "class": "3D",
+            "class_id": 9
+        },
+        {
+            "x": 259.5,
+            "y": 364,
+            "width": 31,
+            "height": 64,
+            "confidence": 0.8027207851409912,
+            "class": "KD",
+            "class_id": 45
+        },
+        {
+            "x": 473.5,
+            "y": 535,
+            "width": 33,
+            "height": 66,
+            "confidence": 0.793393611907959,
+            "class": "KD",
+            "class_id": 45
+        }
+    ]
 }
 
 export const getUniquePredictions = (predictions: RoboflowObjectDetectionData['predictions']) => {
@@ -107,5 +108,19 @@ export const yolo2coco = (cx: number, cy: number, width: number, height: number)
     const x = cx - (width * 0.5)
     const y = cy - (height * 0.5)
 
-    return {x, y, width, height}
+    return { x, y, width, height }
+}
+
+export const getRoboflowSingleDetection = (data: string) => {
+    return axios({
+        method: "POST",
+        url: "https://detect.roboflow.com/playing-cards-ow27d/4",
+        params: {
+            api_key: "2oyw5t39LaDRwByh6M9J"
+        },
+        data: data,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    })
 }

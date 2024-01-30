@@ -15,6 +15,22 @@ const id2value = (id: number) => {
   const valueMap: Record<string, number> = { 'A': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12 }
   return valueMap[num]
 }
+export interface RemainingCards {
+  winRemaining: number,
+  loseRemaining: number,
+  penaltyRemaining: number
+}
+
+export const getRate = (remainingCards?: RemainingCards) => {
+  if(!remainingCards) return undefined
+
+  const totalCardsLeft = remainingCards.loseRemaining + remainingCards.penaltyRemaining + remainingCards.winRemaining
+  const winRate = remainingCards.winRemaining / totalCardsLeft
+  const loseRate = remainingCards.loseRemaining / totalCardsLeft
+  const penaltyRate = remainingCards.penaltyRemaining / totalCardsLeft
+
+  return { winRate, loseRate, penaltyRate }
+}
 
 export const getRemainingStats = (holding: number[]) => {
   if (holding.length !== 2) {
