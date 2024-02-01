@@ -18,13 +18,13 @@ function App() {
   const { state } = useSetting()
 
   return (
-    <main className={vstack({ gap: 2})}>
+    <main className={vstack({ gap: 2 })}>
       <HStack justifyContent="space-between" w="full" pl={2}>
         <Heading as="h1" fontWeight="bold" color="accent.default">CNY Toolkit</Heading>
         <Setting />
       </HStack>
-      {state.toolkit === "in-between" && <InBetweenToolkit/>}
-      {state.toolkit === "blackjack" && <BlackjackToolkit/>}
+      {state.toolkit === "in-between" && <InBetweenToolkit />}
+      {state.toolkit === "blackjack" && <BlackjackToolkit />}
     </main>
   )
 }

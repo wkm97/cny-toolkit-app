@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { css } from 'styled-system/css';
-import { center } from 'styled-system/patterns'
+import { center, vstack } from 'styled-system/patterns'
 import { Camera } from '@/components/camera';
 import cv from "@techstark/opencv-js";
 import { getRoboflowSingleDetection, yolo2coco } from '@/lib/roboflow-utils';
@@ -25,6 +25,7 @@ const image = center({
   border: '1px solid rgba(255, 255, 255, 0.3)',
   minW: 300,
   minH: 400,
+  maxW: 1024,
   mx: 2,
   p: 2,
 })
@@ -146,17 +147,20 @@ export const InBetweenToolkit = () => {
           <Tabs.Indicator />
         </Tabs.List>
         <Tabs.Content value="image" pt={0}>
-          <div className={image}>
-            {inBetweenState.status === 'loaded' && <div className={spinner} />}
-            <canvas className={css({ w: "full" })} ref={imageRef} />
+          <div className={vstack()}>
+            <div className={image}>
+              {inBetweenState.status === 'loaded' && <div className={spinner} />}
+              <canvas className={css({ w: "full" })} ref={imageRef} />
+            </div>
+            {inBetweenState.stats &&
+              <Button mr={2} mt={2} colorPalette="accent" variant="outline" onClick={() => setValue('result')}>
+                View Result
+              </Button>}
           </div>
-          {inBetweenState.stats &&
-            <Button float='end' mr={2} mt={2} colorPalette="accent" variant="outline" onClick={() => setValue('result')}>
-              View Result
-            </Button>}
         </Tabs.Content>
         <Tabs.Content value="result" pt={0}>
-            {inBetweenState.stats ? <InBetweenResult stats={inBetweenState.stats} />: <span className={css({ml: 4})}>No results</span>}
+          {inBetweenState.stats ? <InBetweenResult stats={inBetweenState.stats} /> :
+            <div className={css({ ml: 4 })}>No results</div>}
         </Tabs.Content>
       </Tabs.Root>
       <Camera onCapture={async (data) => {

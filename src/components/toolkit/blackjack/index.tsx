@@ -6,6 +6,7 @@ import cv from "@techstark/opencv-js";
 import { RoboflowObjectDetectionData, getRoboflowSingleDetection, yolo2coco } from '@/lib/roboflow-utils';
 import { imageResize } from '@/lib/image-utils';
 import { getPoint } from './calculator';
+import { VStack } from 'styled-system/jsx';
 
 
 const image = center({
@@ -95,7 +96,7 @@ export const BlackjackToolkit = () => {
   }, [blackjackState])
 
   return (
-    <>
+    <VStack maxW={1024}>
       {source &&
         <img className={css({ display: 'none' })} src={source} alt="snap" role="presentation" onLoad={(e) => {
           if (imageRef.current) {
@@ -120,6 +121,6 @@ export const BlackjackToolkit = () => {
         setBlackjackState(initBlackjackState)
         setSource(data.source)
       }} />
-    </>
+    </VStack>
   )
 }
