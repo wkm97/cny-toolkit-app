@@ -13,7 +13,8 @@ export const Setting = () => {
 
   const items = [
     { label: 'Blackjack', value: 'blackjack' },
-    { label: 'In Between', value: 'in-between' }
+    { label: 'In Between', value: 'in-between' },
+    { label: 'Moo', value: 'moo'}
   ]
 
   return (

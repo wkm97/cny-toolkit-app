@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useLocalStorageState } from "./local-storage.hook";
 
-type ToolkitType = "in-between" | "blackjack"
+type ToolkitType = "in-between" | "blackjack" | "moo"
 
 export interface SettingState {
   toolkit: ToolkitType

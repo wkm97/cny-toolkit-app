@@ -5,6 +5,7 @@ import { HStack } from 'styled-system/jsx';
 import { InBetweenToolkit } from './components/toolkit/in-between';
 import { useSetting } from './contexts/setting';
 import { BlackjackToolkit } from './components/toolkit/blackjack';
+import { MooToolkit } from './components/toolkit/moo';
 
 const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -25,6 +26,7 @@ function App() {
       </HStack>
       {state.toolkit === "in-between" && <InBetweenToolkit />}
       {state.toolkit === "blackjack" && <BlackjackToolkit />}
+      {state.toolkit === "moo" && <MooToolkit />}
     </main>
   )
 }

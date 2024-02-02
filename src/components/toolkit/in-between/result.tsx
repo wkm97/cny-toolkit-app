@@ -14,10 +14,6 @@ export const InBetweenResult = ({ stats }: InBetweenResultProps) => {
 
   const [remaining, setRemaining] = useState<RemainingCards>(stats)
 
-  if (!remaining) {
-    return 'No results'
-  }
-
   const rates = getRate(remaining)
   const formatRate = (rate: number) => (rate * 100).toFixed(2) + '%'
 
