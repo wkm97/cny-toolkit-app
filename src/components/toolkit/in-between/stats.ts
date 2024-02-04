@@ -7,6 +7,8 @@ const id2value = (id: number) => {
   const valueMap: Record<string, number> = { 'A': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9, 'J': 10, 'Q': 11, 'K': 12 }
   return valueMap[num]
 }
+
+export const value2symbol = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 export interface RemainingCards {
   winRemaining: number,
   loseRemaining: number,
@@ -23,7 +25,7 @@ export const getRate = (remainingCards: RemainingCards) => {
   return { winRate, loseRate, penaltyRate }
 }
 
-export const getRemainingStats = (holding: number[]) => {
+export const getRange = (holding: number[]) => {
   if (holding.length !== 2) {
     throw new Error('Holding hand must consist only 2 cards.')
   }
@@ -43,6 +45,12 @@ export const getRemainingStats = (holding: number[]) => {
     highValue = holdingValues[1]
     lowValue = holdingValues[0]
   }
+
+  return [lowValue, highValue]
+}
+
+export const getRemainingStats = (holding: number[]) => {
+  const [lowValue, highValue] = getRange(holding)
 
   const allCards = Array.from({ length: 52 }, (_, index) => index);
   const deck = allCards.filter(id => !holding.includes(id)).map(id2value)

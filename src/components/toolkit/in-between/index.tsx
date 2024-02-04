@@ -48,7 +48,7 @@ export const InBetweenToolkit = () => {
   const imageRef = useRef<HTMLCanvasElement>(null)
   const [inBetweenState, setInBetweenState] = useState<InBetweenState>(initInBetweenState)
   const [value, setValue] = useState<string>('image')
-  const {state: {apiKey}} = useSetting()
+  const { state: { apiKey } } = useSetting()
 
   const [Toaster, toast] = createToaster({
     placement: 'top-end',
@@ -161,8 +161,9 @@ export const InBetweenToolkit = () => {
           </div>
         </Tabs.Content>
         <Tabs.Content value="result" pt={0}>
-          {inBetweenState.stats ? <InBetweenResult stats={inBetweenState.stats} /> :
+          {inBetweenState.stats && inBetweenState.detection ? <InBetweenResult stats={inBetweenState.stats} detection={inBetweenState.detection} /> :
             <div className={css({ ml: 4 })}>No results</div>}
+          {/* <InBetweenResult stats={{winRemaining: 44, loseRemaining: 0, penaltyRemaining: 6}} /> */}
         </Tabs.Content>
       </Tabs.Root>
       <Camera onCapture={async (data) => {
