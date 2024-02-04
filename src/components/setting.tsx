@@ -34,7 +34,7 @@ export const Setting = () => {
               <Stack gap="4">
                 <Dialog.Title>Settings</Dialog.Title>
                 <Stack gap="1.5" width="2xs">
-                  <FormLabel htmlFor="api-key">API Key</FormLabel>
+                  <FormLabel htmlFor="api-key">Roboflow API Key</FormLabel>
                   <Input id="api-key" placeholder="API key" value={state.apiKey} onChange={(e)=> changeSetting(prev => ({...prev, apiKey: e.target.value || ""}))} />
                 </Stack>
                 <Select.Root
