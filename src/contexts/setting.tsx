@@ -6,11 +6,12 @@ type ToolkitType = "in-between" | "blackjack" | "moo"
 export interface SettingState {
   toolkit: ToolkitType
   configuration: undefined | { beta: boolean }
+  apiKey: string
 }
 
 export interface ISettingContext {
   state: SettingState
-  changeSetting: (state: SettingState) => void;
+  changeSetting: React.Dispatch<React.SetStateAction<SettingState>>
 }
 
 const SettingContext = React.createContext<ISettingContext>({} as ISettingContext)
@@ -18,11 +19,11 @@ const SettingContext = React.createContext<ISettingContext>({} as ISettingContex
 export const SettingProvider = ({ children }: React.PropsWithChildren) => {
 
 
-  const [storage, setStorage] = useLocalStorageState<SettingState>("setting", { toolkit: "in-between", configuration: undefined })
+  const [storage, setStorage] = useLocalStorageState<SettingState>("setting", { toolkit: "in-between", configuration: undefined, apiKey: "" })
 
   const context = useMemo(() => ({
     state: storage,
-    changeSetting: (state: SettingState) => setStorage(state)
+    changeSetting: setStorage
   }), [storage])
 
   return (

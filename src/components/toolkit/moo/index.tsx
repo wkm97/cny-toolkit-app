@@ -13,6 +13,7 @@ import { createToaster } from '@ark-ui/react';
 import * as Toast from '@/components/park-ui/toast';
 import { IconButton } from '@/components/park-ui/icon-button';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useSetting } from '@/contexts/setting';
 
 const image = center({
   position: 'relative',
@@ -61,6 +62,7 @@ export const MooToolkit = () => {
   const imageRef = useRef<HTMLCanvasElement>(null)
   const [mooState, setMooState] = useState<MooState>(initMooState)
   const [value, setValue] = useState<string>('image')
+  const {state: {apiKey}} = useSetting()
 
   const [Toaster, toast] = createToaster({
     placement: 'top-end',
@@ -90,7 +92,7 @@ export const MooToolkit = () => {
         cv.imshow(imageRef.current, mooState.image);
         setValue('image');
         const base64out = imageRef.current.toDataURL()
-        getRoboflowSingleDetection(base64out).then(function (response) {
+        getRoboflowSingleDetection(base64out, apiKey).then(function (response) {
           setMooState(prev => ({ ...prev, detection: response.data, results: undefined }))
         }).catch(function (error) {
           console.log(error.message);

@@ -7,6 +7,7 @@ import { RoboflowObjectDetectionData, getRoboflowSingleDetection, yolo2coco } fr
 import { imageResize } from '@/lib/image-utils';
 import { getPoint } from './calculator';
 import { VStack } from 'styled-system/jsx';
+import { useSetting } from '@/contexts/setting';
 
 
 const image = center({
@@ -52,6 +53,7 @@ export const BlackjackToolkit = () => {
   const [source, setSource] = useState("")
   const imageRef = useRef<HTMLCanvasElement>(null)
   const [blackjackState, setBlackjackState] = useState<BlackjackState>(initBlackjackState)
+  const {state: {apiKey}} = useSetting()
 
   useEffect(() => {
     if (imageRef.current) {
@@ -63,7 +65,7 @@ export const BlackjackToolkit = () => {
         }
         cv.imshow(imageRef.current, blackjackState.image);
         const base64out = imageRef.current.toDataURL()
-        getRoboflowSingleDetection(base64out).then(function (response) {
+        getRoboflowSingleDetection(base64out, apiKey).then(function (response) {
           setBlackjackState(prev => ({ ...prev, detection: response.data, point: undefined }))
         }).catch(function (error) {
           console.log(error.message);

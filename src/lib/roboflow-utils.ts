@@ -111,12 +111,15 @@ export const yolo2coco = (cx: number, cy: number, width: number, height: number)
     return { x, y, width, height }
 }
 
-export const getRoboflowSingleDetection = (data: string) => {
+const DEFAULT_API_KEY = import.meta.env.VITE_ROBOFLOW_API_KEY
+
+
+export const getRoboflowSingleDetection = (data: string, apiKey: string) => {
     return axios({
         method: "POST",
         url: "https://detect.roboflow.com/playing-cards-ow27d/4",
         params: {
-            api_key: "2oyw5t39LaDRwByh6M9J"
+            api_key: apiKey || DEFAULT_API_KEY
         },
         data: data,
         headers: {

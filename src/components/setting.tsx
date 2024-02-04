@@ -7,6 +7,8 @@ import { Stack } from "styled-system/jsx"
 import { IconButton } from "@/components/park-ui/icon-button"
 import { SettingState, useSetting } from "@/contexts/setting"
 import { Switch } from "./park-ui/switch"
+import { Input } from "./park-ui/input"
+import { FormLabel } from "./park-ui/form-label"
 
 export const Setting = () => {
   const { state, changeSetting } = useSetting()
@@ -14,7 +16,7 @@ export const Setting = () => {
   const items = [
     { label: 'Blackjack', value: 'blackjack' },
     { label: 'In Between', value: 'in-between' },
-    { label: 'Moo', value: 'moo'}
+    { label: 'Moo', value: 'moo' }
   ]
 
   return (
@@ -27,10 +29,14 @@ export const Setting = () => {
       <Portal>
         <Dialog.Backdrop background="bg.canvas" opacity="0.8" filter="blur(20px)" />
         <Dialog.Positioner>
-          <Dialog.Content h={64}>
-            <Stack gap="8" p="6">
-              <Stack gap="8">
+          <Dialog.Content>
+            <Stack p="4">
+              <Stack gap="4">
                 <Dialog.Title>Settings</Dialog.Title>
+                <Stack gap="1.5" width="2xs">
+                  <FormLabel htmlFor="api-key">API Key</FormLabel>
+                  <Input id="api-key" placeholder="API key" value={state.apiKey} onChange={(e)=> changeSetting(prev => ({...prev, apiKey: e.target.value || ""}))} />
+                </Stack>
                 <Select.Root
                   positioning={{ sameWidth: true }}
                   width="2xs"
@@ -39,9 +45,9 @@ export const Setting = () => {
                   onValueChange={(e) => {
                     const toolkit = e.value[0] as SettingState['toolkit']
                     if (toolkit === "blackjack") {
-                      changeSetting({ toolkit, configuration: undefined })
+                      changeSetting(prev => ({...prev, toolkit, configuration: undefined }))
                     } else {
-                      changeSetting({ toolkit, configuration: { beta: false } })
+                      changeSetting(prev => ({...prev, toolkit, configuration: { beta: false } }))
                     }
                   }}
                 >
@@ -69,7 +75,7 @@ export const Setting = () => {
                   </Select.Positioner>
                 </Select.Root>
                 {state.toolkit === "in-between" &&
-                  <Switch defaultChecked={state.configuration?.beta} onCheckedChange={(e)=> changeSetting({...state, configuration: {beta: e.checked}})}>
+                  <Switch defaultChecked={state.configuration?.beta} onCheckedChange={(e) => changeSetting({ ...state, configuration: { beta: e.checked } })}>
                     Beta
                   </Switch>}
               </Stack>

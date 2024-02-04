@@ -14,6 +14,7 @@ import { InBetweenResult } from '@/components/toolkit/in-between/result';
 import { InBetweenState, initInBetweenState } from '@/components/toolkit/in-between/state';
 import * as Tabs from '@/components/park-ui/tabs';
 import { Button } from '@/components/park-ui/button';
+import { useSetting } from '@/contexts/setting';
 
 
 const image = center({
@@ -47,6 +48,7 @@ export const InBetweenToolkit = () => {
   const imageRef = useRef<HTMLCanvasElement>(null)
   const [inBetweenState, setInBetweenState] = useState<InBetweenState>(initInBetweenState)
   const [value, setValue] = useState<string>('image')
+  const {state: {apiKey}} = useSetting()
 
   const [Toaster, toast] = createToaster({
     placement: 'top-end',
@@ -76,7 +78,7 @@ export const InBetweenToolkit = () => {
         cv.imshow(imageRef.current, inBetweenState.image);
         setValue('image')
         const base64out = imageRef.current.toDataURL()
-        getRoboflowSingleDetection(base64out).then(function (response) {
+        getRoboflowSingleDetection(base64out, apiKey).then(function (response) {
           setInBetweenState(prev => ({ ...prev, detection: response.data, stats: undefined }))
         }).catch(function (error) {
           console.log(error.message);
