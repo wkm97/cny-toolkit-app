@@ -7,13 +7,6 @@ import { useSetting } from './contexts/setting';
 import { BlackjackToolkit } from './components/toolkit/blackjack';
 import { MooToolkit } from './components/toolkit/moo';
 
-// const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
-//   const reader = new FileReader();
-//   reader.readAsDataURL(file);
-//   reader.onload = () => resolve(reader.result);
-//   reader.onerror = reject;
-// });
-
 function App() {
 
   const { state } = useSetting()

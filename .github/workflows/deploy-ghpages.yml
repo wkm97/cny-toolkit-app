@@ -8,6 +8,9 @@ on:
         required: true
         default: 'cny-toolkit-app'
 
+permissions:
+  contents: write
+
 env:
   VITE_ROBOFLOW_API_KEY: ${{ secrets.VITE_ROBOFLOW_API_KEY }}      
 
