@@ -37,6 +37,8 @@ jobs:
       - name: Install dependencies
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: yarn --frozen-lockfile
+      - name: Prepare pandacss codegen
+        run: yarn prepare
       - name: Build 👷
         run: yarn run build --base=${{ github.event.inputs.repository_name }}
       - name: Deploy 🚀
